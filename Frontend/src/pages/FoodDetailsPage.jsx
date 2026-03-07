@@ -12,7 +12,10 @@ import FoodActions from "../components/food-details/FoodActions";
 import FoodTabs from "../components/food-details/FoodTabs";
 import RelatedProducts from "../components/food-details/RelatedProducts";
 
-const FoodDetailsPage = ({ cart, updateQuantity }) => {
+import useCartStore from "../store/useCartStore";
+
+const FoodDetailsPage = () => {
+  const { items: cart, updateQuantity } = useCartStore();
   const { id } = useParams();
   const product = products.find((p) => p.id === parseInt(id));
 
@@ -43,7 +46,7 @@ const FoodDetailsPage = ({ cart, updateQuantity }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Navbar isLoggedIn={true} />
+      <Navbar />
 
       <main className="flex-1 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">

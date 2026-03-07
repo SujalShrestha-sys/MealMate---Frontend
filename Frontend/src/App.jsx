@@ -8,48 +8,38 @@ import Login from "./components/auth/Login.jsx";
 import SignUp from "./components/auth/SignUp.jsx";
 import ForgotPassword from "./components/auth/ForgotPassword.jsx";
 import ResetPassword from "./components/auth/ResetPassword.jsx";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import "./App.css";
 
 function App() {
-  const [cart, setCart] = useState({});
   const location = useLocation();
-
-  const updateQuantity = (productId, delta) => {
-    setCart((prevCart) => {
-      const newQuantity = (prevCart[productId] || 0) + delta;
-      if (newQuantity <= 0) {
-        const { [productId]: _, ...rest } = prevCart;
-        return rest;
-      }
-      return { ...prevCart, [productId]: newQuantity };
-    });
-  };
 
   const isAuthPage = ["/login", "/signup", "/forgot-password"].includes(location.pathname.toLowerCase()) || location.pathname.toLowerCase().startsWith("/reset-password");
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
           path="/menu"
-          element={<MenuPage cart={cart} updateQuantity={updateQuantity} />}
+          element={<MenuPage />}
         />
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route
           path="/food/:id"
           element={
-            <FoodDetailsPage cart={cart} updateQuantity={updateQuantity} />
+            <FoodDetailsPage />
           }
         />
       </Routes>
       {!isAuthPage && <ChatWidget />}
-    </>
+    </div>
   );
 }
 

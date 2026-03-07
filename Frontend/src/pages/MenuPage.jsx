@@ -8,7 +8,10 @@ import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { products } from "../data/products";
 
-const MenuPage = ({ cart, updateQuantity }) => {
+import useCartStore from "../store/useCartStore";
+
+const MenuPage = () => {
+  const { items: cart, updateQuantity } = useCartStore();
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +51,7 @@ const MenuPage = ({ cart, updateQuantity }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Navbar isLoggedIn={true} />
+      <Navbar />
       <main className="flex-1 pt-24 pb-20">
         {/*  Minimalistic Header */}
         <div className="text-center mb-14 px-4">

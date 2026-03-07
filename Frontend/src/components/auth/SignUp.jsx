@@ -1,10 +1,50 @@
 import React, { useState, useMemo } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import AuthLayout from './shared/AuthLayout';
 import AuthInput from './shared/AuthInput';
 import AuthButton from './shared/AuthButton';
 import SocialAuthButton from './shared/SocialAuthButton';
+import useAuthStore from '../../store/useAuthStore';
+
+const roleConfigs = {
+  student: {
+    title: <>Join the<br /><span className="text-emerald-300">MealMate family.</span></>,
+    subtitle: "Create your student account and start ordering fresh meals in minutes.",
+    image: "/images/Background_3.jpg",
+    benefits: [
+      'Skip the canteen queue forever',
+      'Pre-order meals ahead of time',
+      'Track your daily nutrition'
+    ],
+    welcomeTitle: "Student Registration",
+    welcomeSubtitle: "Join 1000+ students already saving time with MealMate."
+  },
+  teacher: {
+    title: <>Excellence in dining for <br /><span className="text-emerald-300">our academic staff.</span></>,
+    subtitle: "Register your faculty account for priority service and exclusive staff menus.",
+    image: "/images/Background_3.jpg",
+    benefits: [
+      'Faculty-exclusive dining areas',
+      'Priority pickup windows',
+      'Streamlined monthly billing'
+    ],
+    welcomeTitle: "Faculty Sign Up",
+    welcomeSubtitle: "Create your professional account for priority campus dining."
+  },
+  admin: {
+    title: <>Secure access for <br /><span className="text-emerald-300">campus administrators.</span></>,
+    subtitle: "Create your administrative account to oversee dining operations and analytics.",
+    image: "/images/Background_3.jpg",
+    benefits: [
+      'Real-time operations tracking',
+      'Menu & vendor management',
+      'Advanced data analytics'
+    ],
+    welcomeTitle: "Admin Registration",
+    welcomeSubtitle: "Standardized administrative access for dining management."
+  }
+};
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +56,14 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuthStore();
+
+  // Extract role
+  const queryParams = new URLSearchParams(location.search);
+  const role = queryParams.get("role") || "student";
+  const config = roleConfigs[role] || roleConfigs.student;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +75,9 @@ const SignUp = () => {
       alert("Please agree to the Terms of Service");
       return;
     }
-    // Add auth logic here
+    // Simulate successful signup
+    login({ email: formData.email, name: formData.fullName, role });
+    navigate("/");
   };
 
   // Password strength
@@ -50,11 +100,7 @@ const SignUp = () => {
 
   const leftContent = (
     <div className="flex flex-col gap-4">
-      {[
-        'Skip the canteen queue forever',
-        'Pre-order meals ahead of time',
-        'Track your daily nutrition',
-      ].map((benefit) => (
+      {config.benefits.map((benefit) => (
         <div key={benefit} className="flex items-center gap-3">
           <div className="w-6 h-6 rounded-full bg-emerald-400/20 flex items-center justify-center shrink-0">
             <Check size={14} className="text-emerald-300" />
@@ -67,14 +113,18 @@ const SignUp = () => {
 
   return (
     <AuthLayout
-      imageSrc="/images/Background_3.jpg"
-      title={<>Join the<br /><span className="text-emerald-300">MealMate family.</span></>}
-      subtitle="Create your account and start ordering fresh meals in minutes."
+      imageSrc={config.image}
+      title={config.title}
+      subtitle={config.subtitle}
       extraLeftContent={leftContent}
     >
       <div className="mb-6 text-center lg:text-left">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Create an account</h2>
-        <p className="text-gray-500">Let's get you started! Fill in the details below.</p>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-wider mb-4 border border-green-100">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          {role} Portal
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">{config.welcomeTitle}</h2>
+        <p className="text-gray-500">{config.welcomeSubtitle}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -177,19 +227,10 @@ const SignUp = () => {
 
         <AuthButton type="submit">Create Account</AuthButton>
       </form>
-
-      <div className="flex items-center gap-4 my-6">
-        <div className="h-px bg-gray-200 flex-1" />
-        <span className="text-gray-400 text-sm font-medium">or continue with</span>
-        <div className="h-px bg-gray-200 flex-1" />
-      </div>
-
-      <SocialAuthButton onClick={() => { }} />
-
       <p className="text-center text-gray-500 mt-7">
         Already have an account?{' '}
         <Link
-          to="/login"
+          to={`/login?role=${role}`}
           className="text-green-600 font-semibold hover:text-green-700 transition-colors duration-200"
         >
           Sign in

@@ -28,7 +28,7 @@ const HeroSection = () => {
 
   return (
     <section
-      id="hero"
+      id="home"
       className="relative min-h-screen flex items-center justify-center from-green-50 to-white pt-28 pb-28"
     >
       <div className="max-w-7xl mx-auto px-4">

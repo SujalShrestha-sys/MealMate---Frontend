@@ -135,7 +135,7 @@ const PlansPage = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-green-50 via-white to-green-50/30 flex flex-col">
-      <Navbar isLoggedIn={true} />
+      <Navbar />
 
       {/* Hero Section Component */}
       <HeroSection scrollToPlans={scrollToPlans} />

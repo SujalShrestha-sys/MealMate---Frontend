@@ -1,5 +1,6 @@
 import React from 'react';
 import { GraduationCap, Users, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Card from '../common/Card';
 import Button from '../common/Button';
 
@@ -66,9 +67,11 @@ const RolesSection = () => {
                                 ))}
                             </ul>
 
-                            <Button variant={role.buttonVariant} size="md" className="w-full mt-auto">
-                                Login as {role.title}
-                            </Button>
+                            <Link to={`/Login?role=${role.id}`} className="w-full mt-auto">
+                                <Button variant={role.buttonVariant} size="md" className="w-full">
+                                    Login as {role.title}
+                                </Button>
+                            </Link>
                         </Card>
                     ))}
                 </div>
