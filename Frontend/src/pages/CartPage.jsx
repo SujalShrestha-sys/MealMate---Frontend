@@ -20,7 +20,7 @@ const CartPage = () => {
   const cartTotal = getCartTotal();
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
 
       <main className="flex-1 pt-28 pb-20 px-4 sm:px-6 lg:px-8">

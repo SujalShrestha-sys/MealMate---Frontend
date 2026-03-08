@@ -31,7 +31,7 @@ const OrderSuccessPage = () => {
     const formatTime = (iso) => iso ? new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "ASAP";
 
     return (
-        <div className="min-h-screen bg-[#FDFEFE] flex flex-col selection:bg-slate-100 overflow-x-hidden">
+        <div className="min-h-screen bg-white flex flex-col selection:bg-slate-100 overflow-x-hidden">
             <Navbar />
 
             {/* Subtle Confetti - Very light pieces for a touch of class */}

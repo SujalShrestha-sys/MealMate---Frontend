@@ -3,6 +3,7 @@ import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import HeroSection from "../components/plans/HeroSection";
 import PlanCard from "../components/plans/PlanCard";
+import { motion, AnimatePresence } from "motion/react";
 
 const PlansPage = () => {
   const [planType, setPlanType] = useState("weekly");
@@ -134,7 +135,7 @@ const PlansPage = () => {
   const currentPlans = planType === "weekly" ? weeklyPlans : monthlyPlans;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-green-50 via-white to-green-50/30 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
 
       {/* Hero Section Component */}
@@ -154,37 +155,56 @@ const PlansPage = () => {
           </div>
 
           {/* Plan Type Toggle */}
-          <div className="flex justify-center mb-12">
-            <div className="inline-flex bg-gray-100 rounded-xl p-1.5">
+          <div className="flex justify-center mb-16">
+            <div className="inline-flex bg-slate-100 rounded-2xl p-1.5 relative">
               <button
                 onClick={() => setPlanType("weekly")}
-                className={`px-8 py-3 rounded-lg font-bold text-sm transition-all ${
-                  planType === "weekly"
-                    ? "bg-white text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
+                className={`relative z-10 px-8 py-3 rounded-xl font-bold text-sm transition-colors duration-300 ${
+                  planType === "weekly" ? "text-slate-900" : "text-slate-500 hover:text-slate-700"
                 }`}
               >
+                {planType === "weekly" && (
+                  <motion.span
+                    layoutId="activePlan"
+                    className="absolute inset-0 bg-white rounded-xl shadow-sm -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 Weekly Plans
               </button>
               <button
                 onClick={() => setPlanType("monthly")}
-                className={`px-8 py-3 rounded-lg font-bold text-sm transition-all ${
-                  planType === "monthly"
-                    ? "bg-white text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
+                className={`relative z-10 px-8 py-3 rounded-xl font-bold text-sm transition-colors duration-300 ${
+                  planType === "monthly" ? "text-slate-900" : "text-slate-500 hover:text-slate-700"
                 }`}
               >
+                {planType === "monthly" && (
+                  <motion.span
+                    layoutId="activePlan"
+                    className="absolute inset-0 bg-white rounded-xl shadow-sm -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 Monthly Plans
               </button>
             </div>
           </div>
 
-          {/* Plan Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {currentPlans.map((plan, index) => (
-              <PlanCard key={index} plan={plan} />
-            ))}
-          </div>
+          {/* Plan Cards Grid with Animation */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={planType}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              {currentPlans.map((plan, index) => (
+                <PlanCard key={index} plan={plan} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 

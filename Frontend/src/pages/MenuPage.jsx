@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import Navbar from "../components/common/Navbar";
+import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import Footer from "../components/common/Footer";
 import MenuFilters from "../components/menu/MenuFilters";
 import MenuGrid from "../components/menu/MenuGrid";
 import PromoBanner from "../components/menu/PromoBanner";
-import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "motion/react";
 
 import { products } from "../data/products";
 
@@ -56,29 +57,9 @@ const MenuPage = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <main className="flex-1 pt-24 pb-20">
-        {/*  Minimalistic Header */}
-        <div className="text-center mb-14 px-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 font-semibold text-[10px] uppercase tracking-wider mb-4 animate-fade-in-up border border-green-100/50 shadow-sm">
-            <Sparkles size={12} className="text-green-500" />
-            <span>Eat Better.</span>
-          </div>
-          <h1
-            className="text-5xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight animate-fade-in-up"
-            style={{ animationDelay: "100ms" }}
-          >
-            Canteen Excellence.
-          </h1>
-          <p
-            className="text-lg text-slate-500 max-w-xl mx-auto animate-fade-in-up font-medium"
-            style={{ animationDelay: "200ms" }}
-          >
-            Pre-order your campus meals effortlessly and skip the queue.
-          </p>
-        </div>
-
         {/* Promotional Banner */}
         <PromoBanner />
 

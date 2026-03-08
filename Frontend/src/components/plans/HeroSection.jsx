@@ -1,98 +1,144 @@
 import React from "react";
-import { Shield, CheckCircle, Clock, Leaf } from "lucide-react";
-import TrustIndicators from "./TrustIndicators";
+import { Shield, CheckCircle, Clock, Sparkles, ArrowDown } from "lucide-react";
+import { motion } from "motion/react";
 
 const HeroSection = ({ scrollToPlans }) => {
   return (
-    <section className="pt-28 pb-20 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-linear-to-br from-green-500/3 via-transparent to-green-600/5"></div>
+    <section className="pt-32 pb-24 relative overflow-hidden bg-white">
+      {/* Decorative background element */}
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-green-50/30 skew-x-[-15deg] translate-x-1/2 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-13 items-center">
-          {/* Left: Text Content */}
-          <div className="space-y-6 text-center lg:text-left">
-            <div className="inline-block">
-              <span className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 w-fit">
-                <Leaf size={16} />
-                Student Meal Plans
-              </span>
-            </div>
-
-            <h1 className="text-4xl lg:text-5xl font-black text-gray-800 leading-tight">
-              Effortless Meals,{" "}
-              <span className="text-green-700">All Semester Long</span>
-            </h1>
-
-            <p className="text-md text-gray-600 leading-relaxed">
-              Save time and money with our weekly and monthly subscription
-              plans. Never worry about what to eat again!
-            </p>
-
-            {/* Trust Badges */}
-            <div className="flex justify-center gap-2 mb-6">
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-3 rounded-lg">
-                <CheckCircle size={20} className="text-green-600" />
-                <span className="text-sm font-semibold text-gray-900">
-                  100% Fresh Ingredients
-                </span>
-              </div>
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
-                <Clock size={20} className="text-green-600" />
-                <span className="text-sm font-semibold text-gray-900">
-                  On-Time Delivery
-                </span>
-              </div>
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-lg">
-                <Shield size={20} className="text-green-600" />
-                <span className="text-sm font-semibold text-gray-900">
-                  Quality Assured
-                </span>
-              </div>
-            </div>
-
-            {/* Trust Indicators */}
-            <TrustIndicators />
-
-            <button
-              onClick={scrollToPlans}
-              className="bg-green-600 cursor-pointer hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl transition-all"
+        <div className="grid lg:grid-cols-12 gap-16 items-center">
+          
+          {/* LEFT SIDE: Content (7 cols) */}
+          <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100/50 text-green-700 text-[10px] font-bold uppercase tracking-widest border border-green-100"
             >
-              View Plans
-            </button>
-          </div>
+              <Sparkles size={12} />
+              <span>Smart Student Living</span>
+            </motion.div>
 
-          {/* Right: Hero Image */}
-          <div className="relative">
-            <div className="aspect-square bg-linear-to-br from-green-600 to-green-600 rounded-full overflow-hidden transform -rotate-4 hover:rotate-0 transition-transform duration-500">
-              <img
-                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800"
-                alt="Healthy meal bowl"
-                className="w-full h-full object-cover"
-              />
+            <div className="space-y-4">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-3xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]"
+              >
+                Eat Well. <br />
+                <span className="text-green-600">Save More.</span> <br />
+                Focus Better.
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-slate-500 text-lg md:text-lg max-w-xl font-medium leading-relaxed"
+              >
+                Our curated meal plans are designed specifically for the campus lifestyle. 
+                Save up to 20% on your daily dining while enjoying gourmet quality.
+              </motion.p>
             </div>
 
-            {/* Floating Badge */}
-            <div className="absolute -bottom-2 -left-2 bg-white rounded-xl p-3 border border-gray-100 shadow-lg">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Shield className="text-green-600" size={24} />
+            {/* CTAs */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap justify-center lg:justify-start gap-4"
+            >
+              <button 
+                onClick={scrollToPlans}
+                className="group inline-flex items-center gap-2 bg-green-600 text-white px-5 py-4 rounded-xl font-bold transition-all shadow-lg shadow-green-600/10 hover:bg-green-700 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                View Plans
+                <ArrowDown size={18} className="group-hover:translate-y-1 transition-transform" />
+              </button>
+              
+              <div className="flex items-center gap-4 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <div className="font-bold text-gray-900">100% Safe</div>
-                  <div className="text-sm text-gray-600">Quality Assured</div>
+                <div className="text-xs font-bold text-slate-600">
+                  <span className="text-slate-900">500+</span> Students Joined
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Additional Trust Badge */}
-            <div className="absolute top-12 right-10 bg-white rounded-xl p-4 border border-gray-100 shadow-lg">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="text-green-600" size={20} />
-                <div className="text-sm font-bold text-green-700">Verified</div>
-              </div>
+            {/* Refined Trust indicators */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-wrap justify-center lg:justify-start gap-8 pt-8 border-t border-slate-100"
+            >
+              {[
+                { icon: <CheckCircle size={16} />, label: "Fresh Daily" },
+                { icon: <Clock size={16} />, label: "Zero Queues" },
+                { icon: <Shield size={16} />, label: "Secured Billing" }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2.5 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
+                  <span className="text-green-600">{item.icon}</span>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* RIGHT SIDE: Imagery (5 cols) */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative aspect-square max-w-md mx-auto">
+              {/* Decorative rings behind image */}
+              <div className="absolute inset-0 border-2 border-dashed border-green-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
+              <div className="absolute inset-4 border border-slate-100 rounded-full" />
+              
+              {/* Main Image with professional framing */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, rotate: -3 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="absolute inset-10 z-10 rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border-8 border-white"
+              >
+                <img 
+                  src="/images/plans_hero.png" 
+                  alt="Meal Prep Selection" 
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+
+              {/* Sophisticated Floating card */}
+              <motion.div 
+                initial={{ opacity: 0, x: 20, y: 20 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.6 }}
+                className="absolute -bottom-2 right-0 lg:-right-4 z-20 bg-white/90 backdrop-blur-md p-4 lg:p-5 rounded-2xl lg:rounded-3xl shadow-2xl border border-white/50 flex flex-col gap-3 lg:gap-4 max-w-40 lg:max-w-[200px]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
+                    <Shield size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Quality Guaranteed</p>
+                    <p className="text-slate-900 font-bold text-sm tracking-tight leading-none">Catering Grade</p>
+                  </div>
+                </div>
+                <div className="h-px bg-slate-100" />
+                <div className="flex justify-between items-center">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">User Satisfaction</div>
+                  <div className="text-green-600 font-black text-sm">4.9/5</div>
+                </div>
+              </motion.div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

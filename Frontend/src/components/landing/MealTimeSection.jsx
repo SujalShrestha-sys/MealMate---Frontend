@@ -63,7 +63,7 @@ const MealTimeSection = () => {
               return (
                 <div
                   key={item.title}
-                  className="group relative rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:shadow-lg overflow-auto"
+                  className="group relative rounded-2xl border border-slate-200 bg-white p-6 transition hover:shadow-lg overflow-auto"
                 >
                   {/* Icon */}
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-100 text-green-600 mb-4">

@@ -31,7 +31,7 @@ const benefits = [
 
 const SubscriptionSection = () => {
   return (
-    <section className="relative py-20 bg-linear-to-br from-amber-50 via-white to-amber-100 overflow-hidden">
+    <section className="relative py-20 bg-white overflow-hidden">
       {/* Background blur circles */}
       <div className="absolute -top-36 -left-36 w-80 h-80 bg-amber-200/30 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute -bottom-44 -right-28 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none"></div>

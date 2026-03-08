@@ -56,7 +56,7 @@ const AuthLayout = ({
       </div>
 
       {/* ── RIGHT PANEL ── */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 bg-gray-50 h-full relative">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 bg-white h-full relative">
         {/* Mobile Logo */}
         <div className="lg:hidden flex items-center gap-2.5 mb-8 select-none">
           <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-green-600 text-white">

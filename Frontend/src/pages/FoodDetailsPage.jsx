@@ -26,7 +26,7 @@ const FoodDetailsPage = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-slate-800 mb-2">
             Item not found
@@ -45,7 +45,7 @@ const FoodDetailsPage = () => {
   const quantity = cart[product.id] || 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
 
       <main className="flex-1 pt-24 pb-12 px-4 sm:px-6 lg:px-8">

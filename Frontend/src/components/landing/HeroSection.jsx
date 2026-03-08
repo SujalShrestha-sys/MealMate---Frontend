@@ -29,7 +29,7 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center from-green-50 to-white pt-28 pb-28"
+      className="relative min-h-screen flex items-center justify-center bg-white pt-28 pb-28"
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
