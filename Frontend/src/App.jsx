@@ -9,6 +9,7 @@ import ForgotPassword from "./components/auth/ForgotPassword.jsx";
 import ResetPassword from "./components/auth/ResetPassword.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
+import OrderTrackingPage from "./pages/OrderTrackingPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import { Toaster } from 'react-hot-toast';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/order-tracking" element={<OrderTrackingPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/food/:id" element={<FoodDetailsPage />}/>
       </Routes>

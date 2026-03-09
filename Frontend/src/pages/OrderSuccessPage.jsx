@@ -92,10 +92,32 @@ const OrderSuccessPage = () => {
                             <Button
                                 variant="primary"
                                 className="w-full rounded-2xl py-4.5 font-bold tracking-tight shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all"
-                                onClick={() => navigate('/menu')}
-                                icon={<ShoppingBag size={18} />}
+                                onClick={() => navigate('/order-tracking', { 
+                                    state: { 
+                                        newOrder: {
+                                            id: orderId,
+                                            totalAmount: location.state?.totalAmount || 1850,
+                                            status: "PENDING",
+                                            createdAt: new Date().toISOString(),
+                                            items: location.state?.items || [
+                                                {
+                                                    quantity: 1,
+                                                    dish: {
+                                                        name: "Premium Curation Box",
+                                                        imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                                    }
+                                                }
+                                            ],
+                                            payment: {
+                                                status: "PAID",
+                                                method: location.state?.paymentMethod || "ESEWA"
+                                            }
+                                        }
+                                    } 
+                                })}
+                                icon={<Clock size={18} />}
                             >
-                                Back to Menu
+                                Track Order
                             </Button>
                             <Button
                                 variant="secondary"

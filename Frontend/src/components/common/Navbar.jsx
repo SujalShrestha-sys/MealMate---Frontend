@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu, X, UtensilsCrossed, User, ShoppingBag } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Button from "./Button";
 import useAuthStore from "../../store/useAuthStore";
 import useCartStore from "../../store/useCartStore";
 import CartDrawer from "../cart/CartDrawer";
 
-const links = ["Home", "Roles", "Features", "Contact"];
+const links = ["Home", "Menu", "Order Tracking", "Plans"];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -29,14 +29,17 @@ const Navbar = () => {
       setScrolled(window.scrollY > 20);
 
       // Active section detection
-      const sectionIds = links.map(link => link.toLowerCase());
+      const sectionIds = links.map((link) => link.toLowerCase());
       const scrollPosition = window.scrollY + 100; // Offset for better detection
 
       for (const id of sectionIds) {
         const element = document.getElementById(id);
         if (element) {
           const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
             setActiveSection(id);
           }
         }
@@ -52,45 +55,70 @@ const Navbar = () => {
 
   return (
     <>
-      <div className={`fixed top-0 w-full z-50 flex justify-center px-4 transition-all duration-500 ${scrolled ? "pt-4 md:pt-4" : "pt-3 md:pt-3"} pointer-events-none`}>
+      <div
+        className={`fixed top-0 w-full z-50 flex justify-center px-4 transition-all duration-500 ${scrolled ? "pt-4 md:pt-4" : "pt-3 md:pt-3"} pointer-events-none`}
+      >
         <nav
           className={`
             pointer-events-auto
             transition-all duration-500 ease-in-out
             flex items-center justify-between
-            ${scrolled
-              ? "max-w-5xl w-full bg-white/80 backdrop-blur-2xl rounded-full px-8 py-2.5 shadow-lg shadow-green-600/20"
-              : "max-w-7xl w-full bg-transparent px-2 py-3 "
+            ${
+              scrolled
+                ? "max-w-5xl w-full bg-white/80 backdrop-blur-2xl rounded-full px-8 py-2.5 shadow-lg shadow-green-600/20"
+                : "max-w-7xl w-full bg-transparent px-2 py-3 "
             }
           `}
         >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className={`
+            <div
+              className={`
               flex items-center justify-center rounded-xl bg-linear-to-br from-green-600 to-green-700 text-white transition-all duration-500
               ${scrolled ? "w-8 h-8 rounded-lg" : "w-10 h-10"}
               group-hover:rotate-12 group-hover:scale-110 shadow-lg shadow-green-600/30
-            `}>
-              <UtensilsCrossed size={scrolled ? 16 : 20} className="drop-shadow-sm" />
+            `}
+            >
+              <UtensilsCrossed
+                size={scrolled ? 16 : 20}
+                className="drop-shadow-sm"
+              />
             </div>
-            <span className={`font-bold tracking-tight text-slate-800 transition-all duration-300 ${scrolled ? "text-base" : "text-xl"}`}>
+            <span
+              className={`font-bold tracking-tight text-slate-800 transition-all duration-300 ${scrolled ? "text-base" : "text-xl"}`}
+            >
               MealMate<span className="text-green-600"></span>
             </span>
           </Link>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-1.5">
-            {links.map(link => {
-              const isActive = activeSection === link.toLowerCase();
+            {links.map((link) => {
+              const isActive =
+                activeSection === link.toLowerCase().replace(" ", "-");
+              const href =
+                link === "Home"
+                  ? "/"
+                  : link === "Menu"
+                    ? "/menu"
+                    : link === "Plans"
+                      ? "/plans"
+                      : link === "Order Tracking"
+                        ? "/order-tracking"
+                        : `#${link.toLowerCase().replace(" ", "-")}`;
+
               return (
-                <a
+                <Link
                   key={link}
-                  href={`#${link.toLowerCase()}`}
+                  to={href}
                   className={`
                     relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300
-                    ${isActive
-                      ? "text-green-700"
-                      : scrolled ? "text-slate-500 hover:text-slate-800" : "text-slate-600 hover:text-slate-900"
+                    ${
+                      isActive
+                        ? "text-green-700"
+                        : scrolled
+                          ? "text-slate-500 hover:text-slate-800"
+                          : "text-slate-600 hover:text-slate-900"
                     }
                   `}
                 >
@@ -98,7 +126,7 @@ const Navbar = () => {
                     <span className="absolute inset-0 bg-green-50/70 rounded-full -z-10 animate-fade-in" />
                   )}
                   <span className="relative z-10">{link}</span>
-                </a>
+                </Link>
               );
             })}
           </div>
@@ -112,11 +140,13 @@ const Navbar = () => {
                   onClick={() => setCartOpen(true)}
                   className="group relative flex items-center justify-center transition-all duration-300 active:scale-95"
                 >
-                  <div className={`
+                  <div
+                    className={`
                     relative flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 
                     shadow-xs transition-all duration-500 group-hover:bg-white group-hover:border-green-200 group-hover:shadow-md
                     ${scrolled ? "w-9 h-9" : "w-11 h-11"}
-                  `}>
+                  `}
+                  >
                     <ShoppingBag
                       size={scrolled ? 18 : 22}
                       className="text-slate-600 group-hover:text-green-600 transition-colors"
@@ -138,11 +168,13 @@ const Navbar = () => {
                   }}
                   title="Click to logout"
                 >
-                  <div className={`
+                  <div
+                    className={`
                     relative flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 
                     shadow-xs transition-all duration-500 group-hover:bg-white group-hover:border-red-200 group-hover:shadow-md
                     ${scrolled ? "w-9 h-9" : "w-11 h-11"}
-                  `}>
+                  `}
+                  >
                     <User
                       size={scrolled ? 18 : 22}
                       className="text-slate-600 group-hover:text-red-500 transition-colors"
@@ -186,96 +218,140 @@ const Navbar = () => {
           </button>
 
           {/* Mobile Menu */}
-          {menuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-4 mx-2 text-left">
-              <div className="bg-white/98 backdrop-blur-3xl rounded-3xl border border-slate-100 p-6 shadow-2xl animate-fade-in-up">
-                <div className="flex flex-col gap-2.5">
-                  {links.map(link => {
-                    const isActive = activeSection === link.toLowerCase();
-                    return (
-                      <a
-                        key={link}
-                        href={`#${link.toLowerCase()}`}
-                        className={`
-                          px-4 py-3.5 rounded-2xl font-bold transition-all duration-300
-                          ${isActive
-                            ? "bg-green-50 text-green-700"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                          }
-                        `}
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {link}
-                      </a>
-                    );
-                  })}
+          <AnimatePresence>
+            {menuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute top-full left-0 right-0 mt-4 mx-2 text-left pointer-events-auto"
+              >
+                <div className="bg-white/98 backdrop-blur-3xl rounded-3xl border border-slate-100 p-6 shadow-2xl">
+                  <div className="flex flex-col gap-2.5">
+                    {links.map((link) => {
+                      const isActive =
+                        activeSection ===
+                          link.toLowerCase().replace(" ", "-") ||
+                        (link === "Order Tracking" &&
+                          window.location.pathname === "/order-tracking");
+                      const href =
+                        link === "Home"
+                          ? "/"
+                          : link === "Menu"
+                            ? "/menu"
+                            : link === "Plans"
+                              ? "/plans"
+                              : link === "Order Tracking"
+                                ? "/order-tracking"
+                                : `#${link.toLowerCase().replace(" ", "-")}`;
 
-                  <div className="h-px bg-slate-100/80 my-3 mx-4" />
+                      return (
+                        <Link
+                          key={link}
+                          to={href}
+                          className={`
+                            px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 flex items-center justify-between
+                            ${
+                              isActive
+                                ? "bg-emerald-50 text-emerald-700"
+                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                            }
+                          `}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <span>{link}</span>
+                          {isActive && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{
+                                duration: 0.4,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                            >
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                            </motion.div>
+                          )}
+                        </Link>
+                      );
+                    })}
 
-                  {isLoggedIn ? (
-                    <div className="flex flex-col gap-3 pt-2">
-                      <button
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setCartOpen(true);
-                        }}
-                        className="flex items-center gap-4 px-4 py-3.5 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-green-50 transition-colors"
-                      >
-                        <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm group-hover:scale-110 group-hover:text-green-600 transition-all">
-                          <ShoppingBag size={22} />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="font-bold text-slate-800">Your Cart</span>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{cartCount} items selected</p>
-                        </div>
-                      </button>
+                    <div className="h-px bg-slate-100/80 my-3 mx-4" />
 
-                      <div
-                        className="flex items-center gap-4 px-4 py-3.5 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-red-50 transition-colors"
-                        onClick={() => {
-                          logout();
-                          navigate("/");
-                        }}
-                      >
-                        <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm group-hover:scale-110 group-hover:text-red-500 transition-all">
-                          <User size={22} />
-                        </div>
-                        <div className="flex flex-col text-left">
-                          <span className="font-bold text-slate-800 group-hover:text-red-700 transition-colors">Logout</span>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tap to sign out</p>
+                    {isLoggedIn ? (
+                      <div className="flex flex-col gap-3 pt-2">
+                        <button
+                          onClick={() => {
+                            setMenuOpen(false);
+                            setCartOpen(true);
+                          }}
+                          className="flex items-center gap-4 px-4 py-3.5 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-green-50 transition-colors"
+                        >
+                          <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm group-hover:scale-110 group-hover:text-green-600 transition-all duration-500">
+                            <ShoppingBag size={22} />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="font-bold text-slate-800">
+                              Your Cart
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                              {cartCount} items selected
+                            </p>
+                          </div>
+                        </button>
+
+                        <div
+                          className="flex items-center gap-4 px-4 py-3.5 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-red-50 transition-colors"
+                          onClick={() => {
+                            logout();
+                            navigate("/");
+                          }}
+                        >
+                          <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-slate-600 shadow-sm group-hover:scale-110 group-hover:text-red-500 transition-all duration-500">
+                            <User size={22} />
+                          </div>
+                          <div className="flex flex-col text-left">
+                            <span className="font-bold text-slate-800 group-hover:text-red-700 transition-colors">
+                              Logout
+                            </span>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                              Tap to sign out
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      <Button
-                        variant="secondary"
-                        size="md"
-                        className="rounded-2xl font-bold border-slate-200"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          navigate("/login");
-                        }}
-                      >
-                        Login
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="md"
-                        className="rounded-2xl font-bold"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          navigate("/SignUp");
-                        }}
-                      >
-                        Sign Up
-                      </Button>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <Button
+                          variant="secondary"
+                          size="md"
+                          className="rounded-2xl font-bold border-slate-200"
+                          onClick={() => {
+                            setMenuOpen(false);
+                            navigate("/login");
+                          }}
+                        >
+                          Login
+                        </Button>
+                        <Button
+                          variant="primary"
+                          size="md"
+                          className="rounded-2xl font-bold"
+                          onClick={() => {
+                            setMenuOpen(false);
+                            navigate("/SignUp");
+                          }}
+                        >
+                          Sign Up
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
       </div>
 
