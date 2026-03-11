@@ -3,21 +3,16 @@ import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
-
-// Services
-import dishService from "../api/services/dish.service";
-
-// Sub-components
 import ImageGallery from "../components/food-details/ImageGallery";
 import FoodInfo from "../components/food-details/FoodInfo";
 import FoodActions from "../components/food-details/FoodActions";
 import FoodTabs from "../components/food-details/FoodTabs";
 import RelatedProducts from "../components/food-details/RelatedProducts";
-
 import useCartStore from "../store/useCartStore";
 import Skeleton from "../components/common/Skeleton";
 import { motion } from "motion/react";
 import { ChevronRight } from "lucide-react";
+import dishService from "../api/services/dish.service";
 
 const FoodDetailsPage = () => {
   const { fetchCart, getQuantity, updateQuantity } = useCartStore();

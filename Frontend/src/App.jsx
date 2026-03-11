@@ -11,6 +11,7 @@ import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 import OrderTrackingPage from "./pages/OrderTrackingPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
+import PaymentVerifyPage from "./pages/PaymentVerifyPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import { Toaster } from "react-hot-toast";
 import {
@@ -20,7 +21,7 @@ import {
 import "./App.css";
 
 import useCartStore from "./store/useCartStore";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 function App() {
   const location = useLocation();
@@ -30,16 +31,33 @@ function App() {
     fetchCart();
   }, [fetchCart]);
 
-  const isAuthPage =
-    ["/login", "/signup", "/forgot-password"].includes(
-      location.pathname.toLowerCase(),
-    ) || location.pathname.toLowerCase().startsWith("/reset-password");
+  const isAuthPage = useMemo(() => {
+    const path = location.pathname.toLowerCase();
+    return (
+      ["/login", "/signup", "/forgot-password"].includes(path) ||
+      path.startsWith("/reset-password")
+    );
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-white">
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/menu" element={<MenuPage />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <MenuPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/plans" element={<PlansPage />} />
 
         {/* Public only routes */}
@@ -101,8 +119,30 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/food/:id" element={<FoodDetailsPage />} />
+        <Route
+          path="/payment/verify"
+          element={
+            <ProtectedRoute>
+              <PaymentVerifyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/food/:id"
+          element={
+            <ProtectedRoute>
+              <FoodDetailsPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
 
       <Toaster

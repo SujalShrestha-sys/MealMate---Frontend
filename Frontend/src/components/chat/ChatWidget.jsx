@@ -1,41 +1,55 @@
-import React, { useState } from "react";
-import { AnimatePresence } from "motion/react";
+import React, { useState, useEffect } from "react";
 import ChatFab from "./ChatFab";
 import ChatPanel from "./ChatPanel";
-
-// Helper to format time
-function formatTime(date) {
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-// Auto-reply messages from support
-const AUTO_REPLIES = [
-  "Thanks for reaching out! Let me look into that for you.",
-  "Of course! Could you provide a bit more detail?",
-  "Got it — I'll check on that right away.",
-  "Sure thing! Is there anything else I can help with?",
-];
+import useChatStore from "../../store/useChatStore";
+import useAuthStore from "../../store/useAuthStore";
+import { AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 const ChatWidget = () => {
+  const { user, isLoggedIn } = useAuthStore();
+  const {
+    messages,
+    initSocket,
+    disconnectSocket,
+    setActiveConversation,
+    connectToSupport,
+    sendMessage,
+    fetchConversations,
+    conversations,
+    activeConversation,
+  } = useChatStore();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "support",
-      name: "MealMate Support",
-      text: "Hi there! 👋 How can we help you today?",
-      time: formatTime(new Date()),
-    },
-  ]);
   const [input, setInput] = useState("");
+
+  // Initialize chat when logged in and widget is open
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      initSocket(user.id);
+      fetchConversations();
+    }
+    return () => {
+      disconnectSocket();
+    };
+  }, [isLoggedIn, user, initSocket, fetchConversations, disconnectSocket]);
+
+  // Handle support conversation (assuming we find an admin or have a default support ID)
+  // For now, if no conversation exists, we might need a way to find the support user.
+  // Let's pick the first conversation if none is active, or wait for user to select.
+  useEffect(() => {
+    if (isOpen && conversations.length > 0 && !activeConversation) {
+      setActiveConversation(conversations[0]);
+    }
+  }, [isOpen, conversations, activeConversation, setActiveConversation]);
 
   // Toggle the chat panel open/closed
   const handleToggle = () => {
-    if (isOpen) {
-      handleClose();
-    } else {
-      setIsOpen(true);
+    if (!isLoggedIn) {
+      toast.error("Please login to chat with support");
+      return;
     }
+    setIsOpen(!isOpen);
   };
 
   // Close the chat panel
@@ -43,34 +57,22 @@ const ChatWidget = () => {
     setIsOpen(false);
   };
 
-  // Send a message and get an auto-reply
-  const handleSend = () => {
+  // Send a real message
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    // Add user message
-    const userMessage = {
-      id: Date.now(),
-      sender: "user",
-      name: "You",
-      text: input.trim(),
-      time: formatTime(new Date()),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    // If no active conversation, we need to create one first
+    // In this case, we'll try to find an admin ID (mocked for now or fetched)
+    if (!activeConversation) {
+      // This is a placeholder for finding the Admin/Support ID
+      // In a real app, you'd fetch the support user ID
+      toast.error("Connecting to support...");
+      // startConversation(adminId);
+      return;
+    }
 
-    // Simulate support reply after 1.2 seconds
-    setTimeout(() => {
-      const randomReply =
-        AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
-      const supportMessage = {
-        id: Date.now() + 1,
-        sender: "support",
-        name: "MealMate Support",
-        text: randomReply,
-        time: formatTime(new Date()),
-      };
-      setMessages((prev) => [...prev, supportMessage]);
-    }, 1200);
+    await sendMessage(input.trim());
+    setInput("");
   };
 
   return (
@@ -79,11 +81,15 @@ const ChatWidget = () => {
       <AnimatePresence>
         {isOpen && (
           <ChatPanel
-            messages={messages}
+            messages={activeConversation ? messages : []}
             input={input}
             onInputChange={setInput}
             onSend={handleSend}
             onClose={handleClose}
+            isWelcome={!activeConversation}
+            onStartChat={() => {
+              connectToSupport();
+            }}
           />
         )}
       </AnimatePresence>

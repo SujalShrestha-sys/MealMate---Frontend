@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import { ShieldCheck } from "lucide-react";
 
 const OrderSummary = ({ subtotal, selectedSlot, children }) => {
-  const tax = subtotal * 0.05; // 5% example
-  const grandTotal = subtotal + tax;
+  const tax = useMemo(() => subtotal * 0.13, [subtotal]); // 13% tax
+  const grandTotal = useMemo(() => subtotal + tax, [subtotal, tax]);
 
-  const formatTime = (isoString) => {
+  const formatTime = useCallback((isoString) => {
     return new Date(isoString).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
+  }, []);
 
   return (
     <motion.div

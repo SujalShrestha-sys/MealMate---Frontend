@@ -2,8 +2,8 @@ import { create } from "zustand";
 
 /**
  * useAuthStore
- * This is a global state store using Zustand.
- * It manages the authentication status of the user across the entire application.
+ * Manages authentication state across the application.
+ * AccessToken is in localStorage, RefreshToken is in httpOnly cookie.
  */
 const getInitialUser = () => {
   try {
@@ -17,13 +17,14 @@ const getInitialUser = () => {
 };
 
 const useAuthStore = create((set) => ({
-  // The initial state: check if token exists in localStorage
-  isLoggedIn: !!localStorage.getItem("token"),
+  isLoggedIn: !!(
+    localStorage.getItem("accessToken") || localStorage.getItem("token")
+  ),
   user: getInitialUser(),
 
   /**
-   * login: Updates the state to signify the user is logged in.
-   * @param {Object} userData - Information about the logged-in user.
+   * login: Stores user data and marks as logged in.
+   * Tokens are handled by authService.login().
    */
   login: (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
@@ -34,9 +35,10 @@ const useAuthStore = create((set) => ({
   },
 
   /**
-   * logout: Reverts the state to the initial logged-out status.
+   * logout: Clears all auth data.
    */
   logout: () => {
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     set({
@@ -44,14 +46,6 @@ const useAuthStore = create((set) => ({
       user: null,
     });
   },
-
-  /**
-   * toggleLogin: A simple helper to flip the login status (useful for testing).
-   */
-  toggleLogin: () =>
-    set((state) => ({
-      isLoggedIn: !state.isLoggedIn,
-    })),
 }));
 
 export default useAuthStore;

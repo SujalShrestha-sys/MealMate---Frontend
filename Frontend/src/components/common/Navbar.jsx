@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Menu, X, UtensilsCrossed, User, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import Button from "./Button";
@@ -7,20 +7,26 @@ import useAuthStore from "../../store/useAuthStore";
 import useCartStore from "../../store/useCartStore";
 import CartDrawer from "../cart/CartDrawer";
 
-const links = ["Home", "Menu", "Order Tracking", "Plans"];
-
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Get shared state from global stores
   const { isLoggedIn, logout } = useAuthStore();
   const { getCartCount } = useCartStore();
 
   const cartCount = getCartCount();
+
+  // Determine which links to show based on auth status
+  const navLinks = useMemo(() => {
+    return isLoggedIn
+      ? ["Menu", "Plans", "Checkout", "Order Tracking"] // Logged in: hide Home
+      : ["Home", "Plans"]; // Logged out: show Home & Plans only
+  }, [isLoggedIn]);
 
   // Handle scroll effects and active section detection
   useEffect(() => {
@@ -29,7 +35,7 @@ const Navbar = () => {
       setScrolled(window.scrollY > 20);
 
       // Active section detection
-      const sectionIds = links.map((link) =>
+      const sectionIds = navLinks.map((link) =>
         link.toLowerCase().replace(/\s+/g, "-"),
       );
       const scrollPosition = window.scrollY + 100; // Offset for better detection
@@ -48,12 +54,12 @@ const Navbar = () => {
       }
 
       // Special case for home (top of page)
-      if (window.scrollY < 100) setActiveSection("home");
+      if (window.scrollY < 100 && !isLoggedIn) setActiveSection("home");
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [navLinks, isLoggedIn, location.pathname]);
 
   return (
     <>
@@ -95,9 +101,27 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-1.5">
-            {links.map((link) => {
-              const isActive =
-                activeSection === link.toLowerCase().replace(" ", "-");
+            {navLinks.map((link) => {
+              // Determine if active - Handle route matching
+              let isActive = false;
+              if (link === "Home") isActive = location.pathname === "/";
+              else if (link === "Menu")
+                isActive =
+                  location.pathname.startsWith("/menu") ||
+                  location.pathname.startsWith("/food");
+              else if (link === "Plans")
+                isActive = location.pathname === "/plans";
+              else if (link === "Checkout")
+                isActive = location.pathname === "/checkout";
+              else if (link === "Order Tracking")
+                isActive = location.pathname === "/order-tracking";
+
+              // Fallback to scroll detection if on same page
+              if (!isActive && location.pathname === "/") {
+                isActive =
+                  activeSection === link.toLowerCase().replace(" ", "-");
+              }
+
               const href =
                 link === "Home"
                   ? "/"
@@ -105,9 +129,11 @@ const Navbar = () => {
                     ? "/menu"
                     : link === "Plans"
                       ? "/plans"
-                      : link === "Order Tracking"
-                        ? "/order-tracking"
-                        : `#${link.toLowerCase().replace(" ", "-")}`;
+                      : link === "Checkout"
+                        ? "/checkout"
+                        : link === "Order Tracking"
+                          ? "/order-tracking"
+                          : `#${link.toLowerCase().replace(" ", "-")}`;
 
               return (
                 <Link
@@ -231,12 +257,26 @@ const Navbar = () => {
               >
                 <div className="bg-white/98 backdrop-blur-3xl rounded-3xl border border-slate-100 p-6 shadow-2xl">
                   <div className="flex flex-col gap-2.5">
-                    {links.map((link) => {
-                      const isActive =
-                        activeSection ===
-                          link.toLowerCase().replace(" ", "-") ||
-                        (link === "Order Tracking" &&
-                          window.location.pathname === "/order-tracking");
+                    {navLinks.map((link) => {
+                      // Determine if active - Handle route matching
+                      let isActive = false;
+                      if (link === "Home") isActive = location.pathname === "/";
+                      else if (link === "Menu")
+                        isActive =
+                          location.pathname.startsWith("/menu") ||
+                          location.pathname.startsWith("/food");
+                      else if (link === "Plans")
+                        isActive = location.pathname === "/plans";
+                      else if (link === "Order Tracking")
+                        isActive = location.pathname === "/order-tracking";
+
+                      // Fallback to scroll detection if on same page
+                      if (!isActive && location.pathname === "/") {
+                        isActive =
+                          activeSection ===
+                          link.toLowerCase().replace(" ", "-");
+                      }
+
                       const href =
                         link === "Home"
                           ? "/"
@@ -244,9 +284,11 @@ const Navbar = () => {
                             ? "/menu"
                             : link === "Plans"
                               ? "/plans"
-                              : link === "Order Tracking"
-                                ? "/order-tracking"
-                                : `#${link.toLowerCase().replace(" ", "-")}`;
+                              : link === "Checkout"
+                                ? "/checkout"
+                                : link === "Order Tracking"
+                                  ? "/order-tracking"
+                                  : `#${link.toLowerCase().replace(" ", "-")}`;
 
                       return (
                         <Link

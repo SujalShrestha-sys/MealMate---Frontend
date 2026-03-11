@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import Button from "../components/common/Button";
@@ -10,55 +10,118 @@ import CartItem from "../components/checkout/CartItem";
 import SlotPicker from "../components/checkout/SlotPicker";
 import OrderSummary from "../components/checkout/OrderSummary";
 import PaymentMethods from "../components/checkout/PaymentMethods";
-
 import useCartStore from "../store/useCartStore";
+import useAuthStore from "../store/useAuthStore";
+import orderService from "../api/services/order.service";
+import paymentService from "../api/services/payment.service";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const {
+    items,
     updateQuantity: updateGlobalQuantity,
-    getCartDetails,
-    getCartTotal
+    getCartTotal,
+    fetchCart,
+    clearCart,
   } = useCartStore();
 
-  const cartItems = getCartDetails().map(item => ({
-    id: `cart-item-${item.id}`,
-    quantity: item.quantity,
-    dish: item
-  }));
-
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
+  React.useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
+  const cartItems = items;
   const subtotal = getCartTotal();
 
   const updateQuantity = (dishId, delta) => {
     updateGlobalQuantity(dishId, delta);
   };
 
-  const handleKhaltiPayment = () => {
+  // Handle payment based on method
+  const handlePayment = async (method) => {
     if (!selectedSlot) {
       toast.error("Please select a pickup slot first!");
       return;
     }
+    if (items.length === 0) {
+      toast.error("Your cart is empty!");
+      return;
+    }
 
-    // Simulate payment process
-    const loadingToast = toast.loading("Connecting to Khalti...");
+    setIsProcessing(true);
+    const loadingToast = toast.loading(
+      method === "KHALTI" ? "Connecting to Khalti..." : "Placing order...",
+    );
 
-    setTimeout(() => {
+    try {
+      // Step 1: Create order on backend
+      const orderResponse = await orderService.createOrder({
+        userId: user.id,
+        pickupSlotId: selectedSlot.id,
+        method,
+        items: items.map((item) => ({
+          dishId: item.dishId,
+          quantity: item.quantity,
+        })),
+      });
+
+      if (!orderResponse.success) {
+        toast.dismiss(loadingToast);
+        toast.error(orderResponse.message || "Failed to create order");
+        setIsProcessing(false);
+        return;
+      }
+
+      const orderId = orderResponse.data.order.id;
+
+      if (method === "KHALTI") {
+        // Step 2: Initiate Khalti payment to get redirect URL
+        const returnUrl = `${window.location.origin}/payment/verify`;
+        const paymentResponse = await paymentService.initiatePayment(
+          orderId,
+          "KHALTI",
+          returnUrl,
+        );
+
+        toast.dismiss(loadingToast);
+
+        if (paymentResponse.success && paymentResponse.data?.payment_url) {
+          toast.success("Redirecting to Khalti...");
+
+          // Save orderId so we can use it after redirect back
+          localStorage.setItem("pending_order_id", orderId);
+          localStorage.setItem("pending_slot", JSON.stringify(selectedSlot));
+
+          // Redirect to Khalti checkout UI
+          window.location.href = paymentResponse.data.payment_url;
+        } else {
+          toast.error("Could not connect to Khalti. Try again.");
+        }
+      } else {
+        // CASH: Order is already placed with COMPLETED payment
+        toast.dismiss(loadingToast);
+        await clearCart();
+        toast.success("Order confirmed! Pay at pickup.");
+
+        navigate("/order-success", {
+          state: {
+            orderId,
+            selectedSlot,
+            paymentMethod: "CASH",
+            totalAmount: orderResponse.data.order.totalAmount,
+          },
+        });
+      }
+    } catch (error) {
       toast.dismiss(loadingToast);
-      toast.success("Payment Received!");
-      navigate("/order-success", { state: { selectedSlot } });
-    }, 1500);
-  };
-
-  const handleCashPayment = () => {
-    if (!selectedSlot) {
-      toast.error("Please select a pickup slot first!");
-      return;
+      console.error("Order error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
-
-    toast.success("Order confirmed!");
-    navigate("/order-success", { state: { selectedSlot } });
   };
 
   return (
@@ -67,10 +130,12 @@ const CheckoutPage = () => {
 
       <main className="flex-1 pt-26 pb-20 px-4 relative">
         <div className="max-w-6xl mx-auto">
-
-          {/* Compact Hero Section */}
+          {/* Hero */}
           <div className="mb-8">
-            <Link to="/menu" className="inline-flex items-center gap-1.5 text-slate-400 hover:text-green-600 font-bold text-[11px] transition-colors mb-3 group uppercase tracking-widest">
+            <Link
+              to="/menu"
+              className="inline-flex items-center gap-1.5 text-slate-400 hover:text-green-600 font-bold text-[11px] transition-colors mb-3 group uppercase tracking-widest"
+            >
               <ArrowLeft size={11} />
               Back to Menu
             </Link>
@@ -87,14 +152,14 @@ const CheckoutPage = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
             {/* Left Column */}
             <div className="lg:col-span-8 flex flex-col gap-8 lg:gap-10">
-
-              {/* Cart Section */}
+              {/* Cart Items */}
               <section>
                 <div className="flex items-center gap-3 mb-5">
-                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">01. Your Curation</h2>
+                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    01. Your Curation
+                  </h2>
                   <div className="h-px flex-1 bg-slate-100" />
                 </div>
 
@@ -113,7 +178,9 @@ const CheckoutPage = () => {
                         animate={{ opacity: 1 }}
                         className="py-12 bg-white rounded-2xl border border-dashed border-slate-200 text-center flex flex-col items-center"
                       >
-                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">Your curation is empty</p>
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+                          Your curation is empty
+                        </p>
                         <Button
                           variant="secondary"
                           size="sm"
@@ -128,10 +195,12 @@ const CheckoutPage = () => {
                 </div>
               </section>
 
-              {/* Booking Section */}
+              {/* Pickup Slots */}
               <section>
                 <div className="flex items-center gap-3 mb-5">
-                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">02. Pickup Timeline</h2>
+                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    02. Pickup Timeline
+                  </h2>
                   <div className="h-px flex-1 bg-slate-100" />
                 </div>
                 <SlotPicker
@@ -141,18 +210,21 @@ const CheckoutPage = () => {
               </section>
             </div>
 
-            {/* Right Column Sidebar */}
+            {/* Right Sidebar */}
             <div className="lg:col-span-4 sticky top-28 self-start flex flex-col gap-4">
               <OrderSummary subtotal={subtotal} selectedSlot={selectedSlot}>
                 <PaymentMethods
-                  onPayKhalti={handleKhaltiPayment}
-                  onPayCash={handleCashPayment}
+                  onPayKhalti={() => handlePayment("KHALTI")}
+                  onPayCash={() => handlePayment("CASH")}
+                  disabled={isProcessing}
                 />
               </OrderSummary>
 
               <div className="flex items-center justify-center gap-2 py-3 bg-slate-50 rounded-xl border border-slate-100 shadow-sm">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Safe & Secured Checkout</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+                  Safe & Secured Checkout
+                </span>
               </div>
             </div>
           </div>

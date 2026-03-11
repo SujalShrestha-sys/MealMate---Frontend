@@ -1,22 +1,42 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ShoppingCart, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
+import {
+  X,
+  ShoppingCart,
+  ShoppingBag,
+  Plus,
+  Minus,
+  Trash2,
+} from "lucide-react";
 import useCartStore from "../../store/useCartStore";
 import Button from "../common/Button";
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const {
-    getCartCount,
-    items,
-    getCartTotal,
-    updateQuantity,
-    clearCart
-  } = useCartStore();
+  const { getCartCount, items, getCartTotal, updateQuantity, clearCart } =
+    useCartStore();
 
   const cartCount = getCartCount();
   const cartTotal = getCartTotal();
+
+  const handleNavigateToMenu = useCallback(() => {
+    onClose();
+    navigate("/menu");
+  }, [navigate, onClose]);
+
+  const handleNavigateToCheckout = useCallback(() => {
+    onClose();
+    navigate("/checkout");
+  }, [navigate, onClose]);
+
+  const handleNavigateToFood = useCallback(
+    (dishId) => {
+      onClose();
+      navigate(`/food/${dishId}`);
+    },
+    [navigate, onClose],
+  );
 
   return (
     <AnimatePresence>
@@ -45,8 +65,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   <ShoppingCart size={18} />
                 </div>
                 <div>
-                  <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Your Selection</h2>
-                  <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">{cartCount} items reserved</p>
+                  <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+                    Your Selection
+                  </h2>
+                  <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">
+                    {cartCount} items reserved
+                  </p>
                 </div>
               </div>
               <button
@@ -70,13 +94,14 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   >
                     <div
                       className="w-16 h-16 rounded-xl overflow-hidden border border-slate-100 shrink-0 shadow-sm cursor-pointer"
-                      onClick={() => {
-                        onClose();
-                        navigate(`/food/${item.dishId}`);
-                      }}
+                      onClick={() => handleNavigateToFood(item.dishId)}
                     >
                       <img
-                        src={item.dish.imageUrl || item.dish.image || "/images/placeholder.jpg"}
+                        src={
+                          item.dish.imageUrl ||
+                          item.dish.image ||
+                          "/images/placeholder.jpg"
+                        }
                         alt={item.dish.name}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                       />
@@ -86,16 +111,17 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         <div className="flex justify-between items-start">
                           <h3
                             className="font-extrabold text-slate-800 text-[13px] leading-tight hover:text-green-700 transition-colors tracking-tight cursor-pointer"
-                            onClick={() => {
-                              onClose();
-                              navigate(`/food/${item.dishId}`);
-                            }}
+                            onClick={() => handleNavigateToFood(item.dishId)}
                           >
                             {item.dish.name}
                           </h3>
-                          <span className="text-[13px] font-bold text-slate-400 ml-2">Rs. {item.dish.price}</span>
+                          <span className="text-[13px] font-bold text-slate-400 ml-2">
+                            Rs. {item.dish.price}
+                          </span>
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1 font-medium tracking-wide">{item.dish.category?.name || "Uncategorized"}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1 font-medium tracking-wide">
+                          {item.dish.category?.name || "Uncategorized"}
+                        </p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-full px-2 py-1">
@@ -105,7 +131,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           >
                             <Minus size={12} />
                           </button>
-                          <span className="text-xs font-bold w-6 text-center text-slate-700">{item.quantity}</span>
+                          <span className="text-xs font-bold w-6 text-center text-slate-700">
+                            {item.quantity}
+                          </span>
                           <button
                             onClick={() => updateQuantity(item.dishId, 1)}
                             className="p-1 rounded-full hover:bg-white text-slate-400 hover:text-green-600 transition-colors active:scale-90"
@@ -114,7 +142,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           </button>
                         </div>
                         <button
-                          onClick={() => updateQuantity(item.dishId, -item.quantity)}
+                          onClick={() =>
+                            updateQuantity(item.dishId, -item.quantity)
+                          }
                           className="text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest"
                         >
                           Remove
@@ -128,16 +158,18 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3 border border-slate-100">
                     <ShoppingBag size={28} strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-base font-bold text-slate-800 mb-1.5">Your cart is empty</h3>
-                  <p className="text-[13px] text-slate-500 mb-6 max-w-[220px]">Explore our menu and discover something delicious to add to your curation.</p>
+                  <h3 className="text-base font-bold text-slate-800 mb-1.5">
+                    Your cart is empty
+                  </h3>
+                  <p className="text-[13px] text-slate-500 mb-6 max-w-[220px]">
+                    Explore our menu and discover something delicious to add to
+                    your curation.
+                  </p>
                   <Button
                     variant="primary"
                     size="sm"
                     className="rounded-full px-7 py-2.5"
-                    onClick={() => {
-                      onClose();
-                      navigate("/menu");
-                    }}
+                    onClick={handleNavigateToMenu}
                   >
                     Browse Menu
                   </Button>
@@ -154,18 +186,19 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     <span>Rs. {cartTotal}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-extrabold text-slate-900 tracking-tight">Total Payment.</span>
-                    <span className="text-xl font-extrabold text-green-600 tracking-tight">Rs. {cartTotal}</span>
+                    <span className="text-xl font-extrabold text-slate-900 tracking-tight">
+                      Total Payment.
+                    </span>
+                    <span className="text-xl font-extrabold text-green-600 tracking-tight">
+                      Rs. {cartTotal}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
                   <Button
                     variant="primary"
                     className="w-full rounded-2xl py-5 font-bold text-base shadow-xl shadow-green-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    onClick={() => {
-                      onClose();
-                      navigate("/checkout");
-                    }}
+                    onClick={handleNavigateToCheckout}
                   >
                     Proceed to Checkout
                   </Button>

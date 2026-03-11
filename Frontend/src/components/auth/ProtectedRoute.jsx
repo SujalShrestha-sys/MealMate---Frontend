@@ -29,9 +29,9 @@ export const PublicRoute = ({ children }) => {
   const location = useLocation();
 
   if (isLoggedIn) {
-    // Redirect to the page they were trying to access, or home
-    const from = location.state?.from?.pathname || "/";
-    return <Navigate to={from} replace />;
+    // Redirect to the page they were trying to access, or the menu page
+    const from = location.state?.from?.pathname || "/menu";
+    return <Navigate to={from === "/" ? "/menu" : from} replace />;
   }
 
   return children;

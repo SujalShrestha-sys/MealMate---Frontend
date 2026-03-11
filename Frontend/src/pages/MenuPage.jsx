@@ -43,7 +43,7 @@ const MenuPage = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [fetchCart]);
 
   const fetchDishes = useCallback(async () => {
     setIsLoading(true);

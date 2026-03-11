@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import cartService from '../api/services/cart.service';
-import toast from 'react-hot-toast';
+import { create } from "zustand";
+import cartService from "../api/services/cart.service";
+import toast from "react-hot-toast";
 
 /**
  * useCartStore
@@ -15,7 +15,8 @@ const useCartStore = create((set, get) => ({
    * fetchCart: Syncs local state with backend
    */
   fetchCart: async () => {
-    const token = localStorage.getItem('token');
+    const token =
+      localStorage.getItem("accessToken") || localStorage.getItem("token");
     if (!token) return;
 
     set({ isLoading: true });
@@ -35,7 +36,8 @@ const useCartStore = create((set, get) => ({
    * addItem: Adds a dish to the cart
    */
   addItem: async (dishId, quantity = 1) => {
-    const token = localStorage.getItem('token');
+    const token =
+      localStorage.getItem("accessToken") || localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to add items to cart");
       return;
@@ -57,7 +59,7 @@ const useCartStore = create((set, get) => ({
    */
   updateQuantity: async (dishId, delta) => {
     const { items } = get();
-    const item = items.find(i => i.dishId === dishId);
+    const item = items.find((i) => i.dishId === dishId);
 
     if (!item) {
       if (delta > 0) return get().addItem(dishId, delta);
@@ -113,7 +115,10 @@ const useCartStore = create((set, get) => ({
    * getCartTotal: Calculates total price.
    */
   getCartTotal: () => {
-    return get().items.reduce((acc, item) => acc + (item.dish.price * item.quantity), 0);
+    return get().items.reduce(
+      (acc, item) => acc + item.dish.price * item.quantity,
+      0,
+    );
   },
 
   /**
@@ -127,9 +132,9 @@ const useCartStore = create((set, get) => ({
    * getQuantity: Returns quantity for a specific dishId
    */
   getQuantity: (dishId) => {
-    const item = get().items.find(i => i.dishId === dishId);
+    const item = get().items.find((i) => i.dishId === dishId);
     return item ? item.quantity : 0;
-  }
+  },
 }));
 
 export default useCartStore;
