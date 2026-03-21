@@ -15,6 +15,7 @@ import OrderTrackingPage from "./pages/OrderTrackingPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import PaymentVerifyPage from "./pages/PaymentVerifyPage.jsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
+import InventoryPage from "./pages/admin/InventoryPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import { Toaster } from "react-hot-toast";
 import {
@@ -157,6 +158,14 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/inventory"
+            element={
+              <ProtectedRoute adminOnly>
+                <InventoryPage />
               </ProtectedRoute>
             }
           />

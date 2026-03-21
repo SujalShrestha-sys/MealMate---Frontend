@@ -75,7 +75,7 @@ section[id] {
   100% { transform: translateX(100%); }
 }
 
-@theme {
+theme {
   --font-sans: 'Geist Variable', 'Inter', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -14,8 +14,8 @@ import {
   ClipboardList,
   UtensilsCrossed,
   BarChart3,
-  Settings,
   LogOut,
+  Package,
   Sparkles,
   User,
 } from "lucide-react";
@@ -26,6 +26,7 @@ import useAuthStore from "../../store/useAuthStore";
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { label: "Orders", icon: ClipboardList, path: "/admin/orders" },
+  { label: "Inventory", icon: Package, path: "/admin/inventory" },
   { label: "Menu", icon: UtensilsCrossed, path: "/admin/menu" },
   { label: "Reports", icon: BarChart3, path: "/admin/reports" },
 ];
@@ -51,7 +52,9 @@ const AdminSidebar = ({ activePath = "/admin/dashboard" }) => {
       }}
     >
       {/* Brand Header */}
-      <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
+      <Box
+        sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}
+      >
         <Box
           sx={{
             width: 34,
@@ -68,7 +71,10 @@ const AdminSidebar = ({ activePath = "/admin/dashboard" }) => {
         >
           <Sparkles size={18} />
         </Box>
-        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: "1.15rem", color: "grey.900" }}>
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: 800, fontSize: "1.15rem", color: "grey.900" }}
+        >
           MealMate
         </Typography>
       </Box>
@@ -122,7 +128,7 @@ const AdminSidebar = ({ activePath = "/admin/dashboard" }) => {
       {/* Footer Area: User Profile & Logout */}
       <Box sx={{ mt: "auto", pt: 1 }}>
         <Divider sx={{ mb: 2, mx: 1, opacity: 0.5 }} />
-        
+
         {/* User Card */}
         <Box
           sx={{
@@ -137,16 +143,16 @@ const AdminSidebar = ({ activePath = "/admin/dashboard" }) => {
             borderColor: "grey.100",
           }}
         >
-          <Avatar 
-            sx={{ 
-              width: 32, 
-              height: 32, 
-              bgcolor: "primary.light", 
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: "primary.light",
               color: "primary.main",
               fontSize: "0.8rem",
               fontWeight: 700,
               border: "1px solid",
-              borderColor: "primary.light"
+              borderColor: "primary.light",
             }}
           >
             {user?.name?.[0]?.toUpperCase() || "A"}
@@ -191,10 +197,10 @@ const AdminSidebar = ({ activePath = "/admin/dashboard" }) => {
             px: 2,
             py: 1,
             color: "grey.600",
-            "&:hover": { 
-              bgcolor: "#fff7ed", 
+            "&:hover": {
+              bgcolor: "#fff7ed",
               color: "primary.main",
-              "& .MuiListItemIcon-root": { color: "primary.main" }
+              "& .MuiListItemIcon-root": { color: "primary.main" },
             },
             transition: "all 0.2s ease",
           }}
