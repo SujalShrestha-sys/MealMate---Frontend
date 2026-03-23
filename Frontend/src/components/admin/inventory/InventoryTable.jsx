@@ -55,7 +55,7 @@ const InventoryTable = ({
       transition={{ duration: 0.4, delay: 0.1 }}
       sx={{
         p: { xs: 2.5, sm: 3 },
-        borderRadius: 1,
+        borderRadius: 2,
         border: "1px solid",
         borderColor: "grey.100",
         transition: "all 0.3s ease-in-out",

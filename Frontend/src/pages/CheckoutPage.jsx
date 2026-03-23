@@ -14,6 +14,7 @@ import useCartStore from "../store/useCartStore";
 import useAuthStore from "../store/useAuthStore";
 import orderService from "../api/services/order.service";
 import paymentService from "../api/services/payment.service";
+import subscriptionService from "../api/services/subscription.service";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -28,9 +29,24 @@ const CheckoutPage = () => {
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [subscription, setSubscription] = useState(null);
 
   React.useEffect(() => {
     fetchCart();
+
+    // Fetch active subscription
+    const fetchSubscription = async () => {
+      try {
+        const response = await subscriptionService.getMySubscription();
+        if (response.success) {
+          setSubscription(response.data);
+        }
+      } catch (error) {
+        // Silently handle 404 (no active subscription)
+        setSubscription(null);
+      }
+    };
+    fetchSubscription();
   }, [fetchCart]);
 
   const cartItems = items;
@@ -82,11 +98,11 @@ const CheckoutPage = () => {
       if (method === "KHALTI") {
         // Step 2: Initiate Khalti payment to get redirect URL
         const returnUrl = `${window.location.origin}/payment/verify`;
-        const paymentResponse = await paymentService.initiatePayment(
+        const paymentResponse = await paymentService.initiatePayment({
           orderId,
-          "KHALTI",
-          returnUrl,
-        );
+          method: "KHALTI",
+          return_url: returnUrl,
+        });
 
         toast.dismiss(loadingToast);
 
@@ -102,6 +118,19 @@ const CheckoutPage = () => {
         } else {
           toast.error("Could not connect to Khalti. Try again.");
         }
+      } else if (method === "SUBSCRIPTION") {
+        toast.dismiss(loadingToast);
+        await clearCart();
+        toast.success("Order confirmed using subscription!");
+
+        navigate("/order-success", {
+          state: {
+            orderId,
+            selectedSlot,
+            paymentMethod: "SUBSCRIPTION",
+            totalAmount: 0,
+          },
+        });
       } else {
         // CASH: Order is already placed with COMPLETED payment
         toast.dismiss(loadingToast);
@@ -219,6 +248,8 @@ const CheckoutPage = () => {
                 <PaymentMethods
                   onPayKhalti={() => handlePayment("KHALTI")}
                   onPayCash={() => handlePayment("CASH")}
+                  onPaySubscription={() => handlePayment("SUBSCRIPTION")}
+                  subscription={subscription}
                   disabled={isProcessing}
                 />
               </OrderSummary>

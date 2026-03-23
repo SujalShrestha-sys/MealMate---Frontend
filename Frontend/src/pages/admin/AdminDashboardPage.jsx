@@ -5,7 +5,14 @@ import StatCard from "../../components/admin/StatCard";
 import SalesTrendChart from "../../components/admin/SalesTrendChart";
 import BusiestHoursChart from "../../components/admin/BusiestHoursChart";
 import LiveOrdersTable from "../../components/admin/LiveOrdersTable";
-import { CalendarDays, ChevronDown } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronDown,
+  ShoppingBag,
+  Banknote,
+  Clock,
+  Star,
+} from "lucide-react";
 import adminService from "../../api/services/admin.service.js";
 
 const AdminDashboardPage = () => {
@@ -50,76 +57,78 @@ const AdminDashboardPage = () => {
             Welcome back, Admin! Here's a look at today's performance.
           </Typography>
         </Box>
-
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<CalendarDays size={16} />}
-          endIcon={<ChevronDown size={14} />}
-          sx={{
-            borderColor: "grey.200",
-            color: "text.primary",
-            borderRadius: 1.5,
-            textTransform: "none",
-            fontWeight: 500,
-            px: 2,
-            "&:hover": { borderColor: "primary.light" },
-          }}
-        >
-          Today
-        </Button>
       </Box>
 
       {/* Stat Cards — responsive grid */}
       <Grid container spacing={2.5} sx={{ mb: 2.5 }}>
         <Grid size={{ xs: 6, md: 3 }}>
           {loading ? (
-            <Skeleton variant="rectangular" height={140} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={140}
+              sx={{ borderRadius: 2 }}
+            />
           ) : (
             <StatCard
               label="Today's Orders"
               value={stats?.todayOrders || 0}
               trend={`${stats?.todayOrdersChange >= 0 ? "+" : ""}${stats?.todayOrdersChange}% from yesterday`}
               trendDirection={stats?.todayOrdersChange >= 0 ? "up" : "down"}
+              icon={ShoppingBag}
               delay={0.05}
             />
           )}
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           {loading ? (
-            <Skeleton variant="rectangular" height={140} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={140}
+              sx={{ borderRadius: 2 }}
+            />
           ) : (
             <StatCard
               label="Today's Sales"
               value={`Rs.${stats?.todaySales?.toLocaleString() || 0}`}
               trend={`${stats?.todaySalesChange >= 0 ? "+" : ""}${stats?.todaySalesChange}% from yesterday`}
               trendDirection={stats?.todaySalesChange >= 0 ? "up" : "down"}
+              icon={Banknote}
               delay={0.1}
             />
           )}
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           {loading ? (
-            <Skeleton variant="rectangular" height={140} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={140}
+              sx={{ borderRadius: 2 }}
+            />
           ) : (
             <StatCard
-              label="Active Pickup Slots"
+              label="Active Slots"
               value={`${stats?.activePickupSlots || 0} / ${stats?.totalPickupSlots || 0}`}
               trend={`${Math.round((stats?.activePickupSlots / stats?.totalPickupSlots) * 100) || 0}% capacity`}
               trendDirection="neutral"
+              icon={Clock}
               delay={0.15}
             />
           )}
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           {loading ? (
-            <Skeleton variant="rectangular" height={140} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={140}
+              sx={{ borderRadius: 2 }}
+            />
           ) : (
             <StatCard
               label="Top Selling Item"
               value={stats?.topSellingItem?.name || "N/A"}
               trend={`${stats?.topSellingItem?.unitsSold || 0} units sold`}
               trendDirection="neutral"
+              icon={Star}
               delay={0.2}
             />
           )}

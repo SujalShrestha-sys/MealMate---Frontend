@@ -1,5 +1,4 @@
-import React from "react";
-import { Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { motion } from "motion/react";
 
 const MotionPaper = motion.create(Paper);
@@ -9,9 +8,11 @@ const StatCard = ({
   value,
   trend,
   trendDirection = "up",
+  trendColor: customTrendColor,
+  icon: Icon,
   delay = 0,
 }) => {
-  const trendColor = trendDirection === "up" ? "success.main" : "grey.400";
+  const trendColor = customTrendColor || (trendDirection === "up" ? "success.main" : "grey.400");
 
   return (
     <MotionPaper
@@ -21,7 +22,7 @@ const StatCard = ({
       transition={{ duration: 0.4, delay }}
       sx={{
         p: { xs: 2.5, sm: 3 }, // Reduced padding on mobile
-        borderRadius: 1,
+        borderRadius: 2,
         border: "1px solid",
         borderColor: "grey.50",
         transition: "all 0.2s ease",
@@ -31,30 +32,46 @@ const StatCard = ({
         },
       }}
     >
-      <Typography
-        variant="body2"
+      <Box
         sx={{
-          color: "grey.500",
-          fontWeight: 600,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
           mb: 1,
-          fontSize: "0.85rem",
         }}
       >
-        {label}
-      </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "grey.500",
+            fontWeight: 600,
+            fontSize: "0.85rem",
+          }}
+        >
+          {label}
+        </Typography>
+        {Icon && (
+          <Box sx={{ color: "primary.main", opacity: 0.7 }}>
+            <Icon size={18} />
+          </Box>
+        )}
+      </Box>
       <Typography
         variant="h5"
         sx={{ fontWeight: 600, mb: 1, fontSize: "1.3rem" }}
       >
         {value}
       </Typography>
-      {trend && (
-        <Typography
-          sx={{ color: trendColor, fontSize: "0.80rem", fontWeight: 600 }}
-        >
-          {trend}
-        </Typography>
-      )}
+      <Typography
+        sx={{
+          color: trend ? trendColor : "transparent",
+          fontSize: "0.80rem",
+          fontWeight: 600,
+          minHeight: "1.2rem", // Reserve space for trend text
+        }}
+      >
+        {trend || "Placeholder"}
+      </Typography>
     </MotionPaper>
   );
 };

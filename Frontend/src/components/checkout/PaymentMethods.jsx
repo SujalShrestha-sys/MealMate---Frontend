@@ -2,8 +2,19 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ShieldCheck, Wallet, Landmark, CheckCircle2 } from "lucide-react";
 
-const PaymentMethods = ({ onPayKhalti, onPayCash }) => {
-  const [selectedMethod, setSelectedMethod] = useState("khalti");
+const PaymentMethods = ({
+  onPayKhalti,
+  onPayCash,
+  onPaySubscription,
+  subscription,
+}) => {
+  const hasSub =
+    subscription &&
+    subscription.status === "ACTIVE" &&
+    subscription.remainingMeals > 0;
+  const [selectedMethod, setSelectedMethod] = useState(
+    hasSub ? "subscription" : "khalti",
+  );
 
   return (
     <div className="mt-4 space-y-4">
@@ -13,7 +24,46 @@ const PaymentMethods = ({ onPayKhalti, onPayCash }) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className={`grid gap-2 ${hasSub ? "grid-cols-3" : "grid-cols-2"}`}>
+        {/* Subscription Button */}
+        {hasSub && (
+          <motion.button
+            onClick={() => setSelectedMethod("subscription")}
+            className={`relative group flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 ${
+              selectedMethod === "subscription"
+                ? "bg-purple-50 border-purple-600 text-purple-700"
+                : "bg-white border-slate-100 hover:border-purple-600/30 text-slate-600 hover:bg-purple-50/10"
+            }`}
+          >
+            <div
+              className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 transition-all duration-300 ${
+                selectedMethod === "subscription"
+                  ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                  : "bg-slate-50"
+              }`}
+            >
+              <ShieldCheck
+                size={18}
+                className={
+                  selectedMethod === "subscription"
+                    ? "text-white"
+                    : "text-slate-400 group-hover:text-purple-600"
+                }
+              />
+            </div>
+            <span className="text-[10px] font-bold tracking-tight uppercase">
+              Plan
+            </span>
+            <div className="absolute -top-1 -right-1 bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+              {subscription.remainingMeals}
+            </div>
+            {selectedMethod === "subscription" && (
+              <div className="absolute bottom-1 right-1">
+                <CheckCircle2 size={10} className="text-purple-600" />
+              </div>
+            )}
+          </motion.button>
+        )}
         {/* Khalti Button */}
         <motion.button
           onClick={() => setSelectedMethod("khalti")}
@@ -90,17 +140,30 @@ const PaymentMethods = ({ onPayKhalti, onPayCash }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={selectedMethod === "khalti" ? onPayKhalti : onPayCash}
+        onClick={
+          selectedMethod === "khalti"
+            ? onPayKhalti
+            : selectedMethod === "subscription"
+              ? onPaySubscription
+              : onPayCash
+        }
         className={`w-full py-3.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all duration-200 uppercase tracking-widest ${
           selectedMethod === "khalti"
             ? "bg-green-600 text-white hover:bg-green-700"
-            : "bg-amber-600 text-white hover:bg-amber-700"
+            : selectedMethod === "subscription"
+              ? "bg-purple-600 text-white hover:bg-purple-700"
+              : "bg-amber-600 text-white hover:bg-amber-700"
         }`}
       >
         {selectedMethod === "khalti" ? (
           <>
             <Landmark size={18} />
             Pay with Khalti
+          </>
+        ) : selectedMethod === "subscription" ? (
+          <>
+            <ShieldCheck size={18} />
+            Use Subscription Meal
           </>
         ) : (
           <>
@@ -113,7 +176,9 @@ const PaymentMethods = ({ onPayKhalti, onPayCash }) => {
       <p className="text-[10px] text-center text-slate-400 font-medium px-4">
         {selectedMethod === "khalti"
           ? "Quick and secure checkout via Khalti gateway."
-          : "Simple and reliable payment on pickup."}
+          : selectedMethod === "subscription"
+            ? "Apply one of your pre-paid subscription meals."
+            : "Simple and reliable payment on pickup."}
       </p>
     </div>
   );

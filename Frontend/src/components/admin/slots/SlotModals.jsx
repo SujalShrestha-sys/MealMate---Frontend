@@ -216,19 +216,19 @@ const SlotModals = ({ mode, open, onClose, slot, onSuccess, selectedDate }) => {
             onClick={handleDelete}
             variant="contained"
             sx={{
-              background: "linear-gradient(135deg, #f43d3de6 0%, #dc2626 100%)",
+              background:
+                "linear-gradient(135deg, #f43d3de6 0%, #d14a4aff 100%)",
               color: "#fff",
               fontWeight: 600,
               fontSize: "0.92rem",
               px: 3,
               py: 1.35,
               borderRadius: "12px",
-              boxShadow: "0 10px 15px -3px rgba(239, 68, 68, 0.3)",
               textTransform: "none",
               "&:hover": {
                 background:
-                  "linear-gradient(135deg, #f15a5aff 0%, #b91c1c 100%)",
-                transform: "translateY(-0.95px)",
+                  "linear-gradient(135deg, #f15a5aff 0%, #b91c1c 90%)",
+                transform: "translateY(-1px)",
               },
             }}
           >

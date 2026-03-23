@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { XCircle, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
@@ -43,31 +43,46 @@ const PaymentVerifyPage = () => {
       }
 
       try {
-        // Verify with our backend
+        // Verify with backend
         const response = await paymentService.verifyPayment(pidx);
 
         if (response.success) {
-          await clearCart();
-          toast.success("Payment verified successfully!");
+          const paymentData = response.data;
 
-          // Get and clean up saved order info from localStorage
-          const pendingOrderId = localStorage.getItem("pending_order_id");
-          let pendingSlot = null;
-          try {
-            pendingSlot = JSON.parse(localStorage.getItem("pending_slot"));
-          } catch (e) {}
+          if (paymentData.orderId) {
+            await clearCart();
+            toast.success("Order payment verified!");
 
-          localStorage.removeItem("pending_order_id");
-          localStorage.removeItem("pending_slot");
+            // Get and clean up saved order info from localStorage
+            const pendingOrderId = localStorage.getItem("pending_order_id");
+            let pendingSlot = null;
+            try {
+              pendingSlot = JSON.parse(localStorage.getItem("pending_slot"));
+            } catch (e) {}
 
-          // Redirect automatically to the single success page
-          navigate("/order-success", {
-            state: {
-              orderId: pendingOrderId,
-              selectedSlot: pendingSlot,
-              paymentMethod: "KHALTI",
-            },
-          });
+            localStorage.removeItem("pending_order_id");
+            localStorage.removeItem("pending_slot");
+
+            navigate("/order-success", {
+              state: {
+                orderId: pendingOrderId || paymentData.orderId,
+                selectedSlot: pendingSlot,
+                paymentMethod: "KHALTI",
+              },
+            });
+          } else if (paymentData.subscriptionId) {
+            toast.success("Subscription activated successfully!");
+            // Redirect to plans page with success state
+            navigate("/plans", {
+              state: {
+                paymentSuccess: true,
+                subscriptionId: paymentData.subscriptionId,
+              },
+            });
+          } else {
+            toast.success("Payment verified!");
+            navigate("/");
+          }
         } else {
           setStatus("failed");
           toast.error(response.message || "Payment verification failed.");

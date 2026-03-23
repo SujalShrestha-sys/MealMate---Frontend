@@ -17,6 +17,7 @@ import PaymentVerifyPage from "./pages/PaymentVerifyPage.jsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
 import InventoryPage from "./pages/admin/InventoryPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
+import SubscriptionManagementPage from "./pages/admin/SubscriptionManagementPage.jsx";
 import SlotManagementPage from "./pages/admin/SlotManagementPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import { Toaster } from "react-hot-toast";
@@ -51,7 +52,6 @@ function App() {
     <ThemeProvider theme={theme}>
       <div className="min-h-screen bg-white">
         <Routes>
-          {/* ... existing routes ... */}
           <Route
             path="/"
             element={
@@ -176,6 +176,14 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <UserManagementPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/subscriptions"
+            element={
+              <ProtectedRoute adminOnly>
+                <SubscriptionManagementPage />
               </ProtectedRoute>
             }
           />

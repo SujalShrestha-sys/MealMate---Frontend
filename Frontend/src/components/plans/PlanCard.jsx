@@ -1,10 +1,72 @@
 import React from "react";
-import { Check, Package } from "lucide-react";
 
-const PlanCard = ({ plan }) => {
+import { Check, Package, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/useAuthStore";
+import subscriptionService from "../../api/services/subscription.service";
+import paymentService from "../../api/services/payment.service";
+import toast from "react-hot-toast";
+
+const PlanCard = ({ plan, isCurrentPlan, hasActiveSub, status }) => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuthStore();
+  const [isPurchasing, setIsPurchasing] = React.useState(false);
+
+  const handleChoosePlan = async () => {
+    if (!isLoggedIn) {
+      toast.error("Please login to purchase a plan");
+      navigate("/login");
+      return;
+    }
+
+    if (hasActiveSub && !isCurrentPlan) {
+      toast.error("You already have an active subscription");
+      return;
+    }
+
+    if (isCurrentPlan && status === "ACTIVE") {
+      toast.success("This is your current plan!");
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      // Step 1: Create pending subscription
+      const subResponse = await subscriptionService.purchasePlan(plan.id);
+
+      if (subResponse.success) {
+        const subscriptionId = subResponse.data.id;
+
+        // Step 2: Initiate Khalti Payment
+        const paymentResponse = await paymentService.initiatePayment({
+          orderId: null,
+          subscriptionId,
+          method: "KHALTI",
+          return_url: `${window.location.origin}/payment/verify`,
+        });
+
+        if (paymentResponse.success) {
+          // Redirect to Khalti
+          window.location.href = paymentResponse.data.payment_url;
+        } else {
+          toast.error(paymentResponse.message || "Failed to initiate payment");
+        }
+      } else {
+        toast.error(subResponse.message || "Failed to initiate subscription");
+      }
+    } catch (error) {
+      console.error("Purchase error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
   return (
     <div
-      className={`relative bg-white rounded-2xl p-6 transition-all duration-300 flex flex-col group ${
+      className={`relative bg-white rounded-xl p-6 transition-all duration-300 flex flex-col group ${
         plan.popular
           ? "border-2 border-green-500 hover:shadow-lg "
           : "border border-gray-200 hover:border-green-300 hover:shadow-md"
@@ -76,13 +138,27 @@ const PlanCard = ({ plan }) => {
 
       {/* CTA Button */}
       <button
-        className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
-          plan.popular
-            ? "bg-green-600 hover:bg-green-700 text-white"
-            : "bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200"
+        onClick={handleChoosePlan}
+        disabled={isPurchasing || (status === "ACTIVE" && !isCurrentPlan)}
+        className={`w-full py-3.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+          isCurrentPlan && status === "ACTIVE"
+            ? "bg-slate-100 text-slate-500 cursor-default"
+            : plan.popular || (isCurrentPlan && status === "PENDING_PAYMENT")
+              ? "bg-green-600 hover:bg-green-700 text-white disabled:opacity-70"
+              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200 disabled:opacity-70"
         }`}
       >
-        Choose Plan
+        {isPurchasing ? (
+          <Loader2 size={20} className="animate-spin" />
+        ) : isCurrentPlan ? (
+          status === "PENDING_PAYMENT" ? (
+            "Complete Payment"
+          ) : (
+            "Current Plan"
+          )
+        ) : (
+          "Choose Plan"
+        )}
       </button>
     </div>
   );

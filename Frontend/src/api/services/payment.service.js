@@ -2,12 +2,8 @@ import apiClient from "../apiClient";
 
 const paymentService = {
   // Initiate a payment (Khalti or Cash)
-  initiatePayment: (orderId, method, returnUrl) => {
-    return apiClient.post("/payments/initiate", {
-      orderId,
-      method,
-      returnUrl,
-    });
+  initiatePayment: (data) => {
+    return apiClient.post("/payments/initiate", data);
   },
 
   // Verify Khalti payment after redirect
