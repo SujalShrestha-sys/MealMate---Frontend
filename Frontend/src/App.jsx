@@ -16,9 +16,10 @@ import CartPage from "./pages/CartPage.jsx";
 import PaymentVerifyPage from "./pages/PaymentVerifyPage.jsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
 import InventoryPage from "./pages/admin/InventoryPage.jsx";
+import SlotManagementPage from "./pages/admin/SlotManagementPage.jsx";
 import UserManagementPage from "./pages/admin/UserManagementPage.jsx";
 import SubscriptionManagementPage from "./pages/admin/SubscriptionManagementPage.jsx";
-import SlotManagementPage from "./pages/admin/SlotManagementPage.jsx";
+import MenuManagementPage from "./pages/admin/MenuManagementPage.jsx";
 import ChatWidget from "./components/chat/ChatWidget.jsx";
 import { Toaster } from "react-hot-toast";
 import {
@@ -160,6 +161,14 @@ function App() {
             element={
               <ProtectedRoute adminOnly>
                 <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/menu"
+            element={
+              <ProtectedRoute adminOnly>
+                <MenuManagementPage />
               </ProtectedRoute>
             }
           />
