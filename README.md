@@ -1,4 +1,5 @@
 # 📌 Project Introduction
+![Uploading Screenshot 2026-03-28 220532.png…]()
 
 MealMate is a **full-stack meal subscription and food ordering platform** developed to streamline and modernize the dining experience in campus environments. The system addresses common challenges such as long queues, inefficient manual ordering, lack of structured meal planning, and limited access to organized food services.
 
