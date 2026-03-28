@@ -294,7 +294,7 @@ export const AddEditDishModal = ({
             fullWidth
             value={formData.badge}
             onChange={handleChange}
-            placeholder="e.g. Recommended, New, Best Seller"
+            placeholder="e.g. NEW, BESTSELLER, CHEF_SPECIAL, LIMITED"
             sx={fieldStyle}
             InputProps={{
               startAdornment: (
