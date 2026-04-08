@@ -9,7 +9,7 @@ import Button from "../components/common/Button";
 import paymentService from "../api/services/payment.service";
 import useCartStore from "../store/useCartStore";
 
-const PaymentVerifyPage = () => {
+const PaymentVerifyPage = ()  => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState("verifying");
